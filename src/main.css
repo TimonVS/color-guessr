@@ -1,0 +1,72 @@
+@import '../node_modules/modern-normalize/modern-normalize.css';
+
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100%;
+  background: linear-gradient(
+    45deg,
+    rgba(255, 0, 0, 1) 0%,
+    rgba(255, 154, 0, 1) 10%,
+    rgba(208, 222, 33, 1) 20%,
+    rgba(79, 220, 74, 1) 30%,
+    rgba(63, 218, 216, 1) 40%,
+    rgba(47, 201, 226, 1) 50%,
+    rgba(28, 127, 238, 1) 60%,
+    rgba(95, 21, 242, 1) 70%,
+    rgba(186, 12, 248, 1) 80%,
+    rgba(251, 7, 217, 1) 90%,
+    rgba(255, 0, 0, 1) 100%
+  );
+  display: grid;
+  align-content: center;
+}
+
+.main {
+  width: 100%;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  background: #fff;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.title {
+  margin-top: 0;
+}
+
+.button {
+  border: none;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.color-swatch {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.color-swatch .swatch {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+}
+
+.main .color-swatch {
+  margin-top: 1rem;
+}
+
+.main .button {
+  margin-top: 1rem;
+}
+
+.main .react-colorful {
+  width: auto;
+}
