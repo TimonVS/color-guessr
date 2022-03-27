@@ -130,10 +130,14 @@ export function deltaE2000([l1, a1, b1]: LAB, [l2, a2, b2]: LAB) {
   return deltaE;
 }
 
-function rad2deg(rad: number) {
+export function getBrightness([r, g, b]: RGB): number {
+  return (r * 299 + g * 587 + b * 114) / 1000;
+}
+
+function rad2deg(rad: number): number {
   return (360 * rad) / (2 * Math.PI);
 }
 
-function deg2rad(deg: number) {
+function deg2rad(deg: number): number {
   return (2 * Math.PI * deg) / 360;
 }

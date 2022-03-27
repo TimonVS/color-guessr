@@ -1,14 +1,14 @@
 import { useState } from 'preact/hooks';
 import { HexColorPicker } from 'react-colorful';
-import { deltaE2000, hex2rgb, rgb2lab } from './color-utils';
+import { deltaE2000, getBrightness, hex2rgb, rgb2lab } from './color-utils';
 import { colors } from './colors';
 import { randomInt } from './utils';
 
 export function App() {
   const [colorHex, colorName, randomizeColor] = useRandomColor();
-  const [answer, setAnswer] = useState('#000000');
+  const [guess, setGuess] = useState('#000000');
   const [submitted, setSubmitted] = useState(false);
-  const distance = deltaE2000(rgb2lab(hex2rgb(colorHex)), rgb2lab(hex2rgb(answer)));
+  const distance = deltaE2000(rgb2lab(hex2rgb(colorHex)), rgb2lab(hex2rgb(guess)));
   const score = 100 - Math.min(distance, 100);
   const formattedScore = `${score.toFixed(2)}%`;
 
@@ -23,13 +23,13 @@ export function App() {
             setSubmitted(true);
           }}
         >
-          <HexColorPicker color={answer} onChange={(c) => setAnswer(c)} />
+          <HexColorPicker color={guess} onChange={(c) => setGuess(c)} />
 
-          <ColorSwatch color={answer} />
+          <ColorSwatch color={guess} />
 
-          <button type="submit" class="button">
-            Submit answer
-          </button>
+          <Button type="submit" color={guess}>
+            Submit guess
+          </Button>
         </form>
       )}
       {submitted && (
@@ -40,23 +40,22 @@ export function App() {
 
           <h2>You chose:</h2>
 
-          <ColorSwatch color={answer} />
+          <ColorSwatch color={guess} />
 
           <h2>The answer was:</h2>
 
           <ColorSwatch color={colorHex} />
 
-          <button
-            type="button"
-            class="button"
+          <Button
+            color={colorHex}
             onClick={() => {
               setSubmitted(false);
-              setAnswer('#000000');
+              setGuess('#000000');
               randomizeColor();
             }}
           >
             Next question
-          </button>
+          </Button>
         </div>
       )}
     </div>
@@ -69,6 +68,23 @@ function useRandomColor(): [colorHex: string, colorName: string, randomizeColor:
   const randomizeColor = () => setColor(getRandomColor());
 
   return [...color, randomizeColor];
+}
+
+function Button({
+  color,
+  ...props
+}: Omit<JSX.HTMLAttributes<HTMLButtonElement>, 'class' | 'style'> & { color: string }) {
+  return (
+    <button
+      type="button"
+      class="button"
+      style={{
+        background: color,
+        color: getBrightness(hex2rgb(color)) > 128 ? '#000' : '#fff',
+      }}
+      {...props}
+    />
+  );
 }
 
 function ColorSwatch({ color, ...props }: { color: string; class?: string }) {
