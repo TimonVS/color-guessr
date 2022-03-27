@@ -1,6 +1,6 @@
 import { useState } from 'preact/hooks';
 import { HexColorPicker } from 'react-colorful';
-import { deltaE, hex2rgb, rgb2lab } from './color-utils';
+import { deltaE2000, hex2rgb, rgb2lab } from './color-utils';
 import { colors } from './colors';
 import { randomInt } from './utils';
 
@@ -8,7 +8,9 @@ export function App() {
   const [colorHex, colorName, randomizeColor] = useRandomColor();
   const [answer, setAnswer] = useState('#000000');
   const [submitted, setSubmitted] = useState(false);
-  const distance = deltaE(rgb2lab(hex2rgb(colorHex)), rgb2lab(hex2rgb(answer)));
+  const distance = deltaE2000(rgb2lab(hex2rgb(colorHex)), rgb2lab(hex2rgb(answer)));
+  const score = 100 - Math.min(distance, 100);
+  const formattedScore = `${score.toFixed(2)}%`;
 
   return (
     <div className="main">
@@ -33,7 +35,7 @@ export function App() {
       {submitted && (
         <div>
           <p>
-            Your score is <strong>{(100 - Math.min(distance, 100)).toFixed(2)}</strong>. {resultStr(distance)}.
+            Your score is <strong>{formattedScore}</strong>. {resultStr(distance)}.
           </p>
 
           <h2>You chose:</h2>
