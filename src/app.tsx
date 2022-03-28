@@ -1,5 +1,7 @@
 import { useState } from 'preact/hooks';
 import { HexColorPicker } from 'react-colorful';
+import { Button, TwitterShareButton } from './button';
+import { ColorSwatch } from './color-swatch';
 import { deltaE2000, hex2rgb, rgb2lab } from './color-utils';
 import { colors } from './colors';
 import { randomInt } from './utils';
@@ -44,15 +46,16 @@ export function App() {
 
           <ColorSwatch color={colorHex} />
 
-          <Button
+          <TwitterShareButton
+            text={`I scored ${formattedScore} for the color: ${colorName} on https://colorguessr.pages.dev #ColorGuessr`}
             onClick={() => {
               setSubmitted(false);
               setGuess('#000000');
               randomizeColor();
             }}
           >
-            Next question
-          </Button>
+            Share on Twitter
+          </TwitterShareButton>
 
           <Button
             onClick={() => {
@@ -75,19 +78,6 @@ function useRandomColor(): [colorHex: string, colorName: string, randomizeColor:
   const randomizeColor = () => setColor(getRandomColor());
 
   return [...color, randomizeColor];
-}
-
-function Button(props: Omit<JSX.HTMLAttributes<HTMLButtonElement>, 'class'>) {
-  return <button type="button" class="button" {...props} />;
-}
-
-function ColorSwatch({ color, ...props }: { color: string; class?: string }) {
-  return (
-    <div class="color-swatch" {...props}>
-      <div class="swatch" style={{ background: color }} />
-      <span class="swatch-label">{color}</span>
-    </div>
-  );
 }
 
 function resultStr(distance: number): string {

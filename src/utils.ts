@@ -3,3 +3,7 @@ export function randomInt(min: number, max: number): number {
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
 }
+
+export function cx(...classes: (string | undefined)[]) {
+  return classes.filter(Boolean).join(' ');
+}

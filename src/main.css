@@ -40,6 +40,7 @@ body {
 }
 
 .button {
+  display: inline-block;
   border: none;
   padding: 0.75rem 1rem;
   border-radius: 0.5rem;
@@ -51,6 +52,7 @@ body {
   background: #11181c;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   transition: opacity 0.2s;
+  text-decoration: none;
 }
 
 .button:hover {
@@ -59,6 +61,10 @@ body {
 
 .button:active {
   opacity: 0.8;
+}
+
+.button-twitter {
+  background: #1da1f2;
 }
 
 .color-swatch {
