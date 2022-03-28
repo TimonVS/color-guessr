@@ -1,6 +1,6 @@
 import { useState } from 'preact/hooks';
 import { HexColorPicker } from 'react-colorful';
-import { deltaE2000, getBrightness, hex2rgb, rgb2lab } from './color-utils';
+import { deltaE2000, hex2rgb, rgb2lab } from './color-utils';
 import { colors } from './colors';
 import { randomInt } from './utils';
 
@@ -27,9 +27,7 @@ export function App() {
 
           <ColorSwatch color={guess} />
 
-          <Button type="submit" color={guess}>
-            Submit guess
-          </Button>
+          <Button type="submit">Submit guess</Button>
         </form>
       )}
       {submitted && (
@@ -47,7 +45,16 @@ export function App() {
           <ColorSwatch color={colorHex} />
 
           <Button
-            color={colorHex}
+            onClick={() => {
+              setSubmitted(false);
+              setGuess('#000000');
+              randomizeColor();
+            }}
+          >
+            Next question
+          </Button>
+
+          <Button
             onClick={() => {
               setSubmitted(false);
               setGuess('#000000');
@@ -70,21 +77,8 @@ function useRandomColor(): [colorHex: string, colorName: string, randomizeColor:
   return [...color, randomizeColor];
 }
 
-function Button({
-  color,
-  ...props
-}: Omit<JSX.HTMLAttributes<HTMLButtonElement>, 'class' | 'style'> & { color: string }) {
-  return (
-    <button
-      type="button"
-      class="button"
-      style={{
-        background: color,
-        color: getBrightness(hex2rgb(color)) > 128 ? '#000' : '#fff',
-      }}
-      {...props}
-    />
-  );
+function Button(props: Omit<JSX.HTMLAttributes<HTMLButtonElement>, 'class'>) {
+  return <button type="button" class="button" {...props} />;
 }
 
 function ColorSwatch({ color, ...props }: { color: string; class?: string }) {
