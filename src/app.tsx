@@ -1,119 +1,96 @@
-import { useEffect, useMemo, useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 import { HexColorPicker } from 'react-colorful';
 import { Button, TwitterShareButton } from './button';
 import { ColorSwatch } from './color-swatch';
 import { deltaE2000, hex2rgb, rgb2lab } from './color-utils';
 import { colors } from './colors';
-import { randomInt } from './utils';
+import { GameStateContextProvider, useGameState } from './game-state';
 
 export function App() {
-  const { color, nextQuestion } = useQuestion();
-  const [guess, setGuess] = useState('#000000');
-  const [submitted, setSubmitted] = useState(false);
-  const distance = deltaE2000(rgb2lab(hex2rgb(color.hex)), rgb2lab(hex2rgb(guess)));
-  const score = 100 - Math.min(distance, 100);
-  const formattedScore = `${score.toFixed(2)}%`;
+  return (
+    <GameStateContextProvider>
+      <Game />
+    </GameStateContextProvider>
+  );
+}
+
+function Game() {
+  const { state } = useGameState();
+  const color = colors[state.colorIndex];
+
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    url.searchParams.set('q', state.colorIndex.toString());
+    history.replaceState({}, '', url);
+  }, [state.colorIndex]);
 
   return (
     <div className="main">
       <h1 class="title">Guess the color: {color.name}</h1>
-      {!submitted && (
-        <form
-          id="answer"
-          onSubmit={(e) => {
-            e.preventDefault();
-            setSubmitted(true);
-          }}
-        >
-          <HexColorPicker color={guess} onChange={(c) => setGuess(c)} />
-
-          <ColorSwatch color={guess} />
-
-          <Button type="submit">Submit guess</Button>
-        </form>
-      )}
-      {submitted && (
-        <div>
-          <p>
-            Your score is <strong>{formattedScore}</strong>. {resultStr(distance)}
-          </p>
-
-          <h2>You chose:</h2>
-
-          <ColorSwatch color={guess} />
-
-          <h2>The answer was:</h2>
-
-          <ColorSwatch color={color.hex} />
-
-          <TwitterShareButton
-            text={`I scored ${formattedScore} for the color: ${color.name}. Challenge me on ${window.location.href} #ColorGuessr`}
-          >
-            Share on Twitter
-          </TwitterShareButton>
-
-          <Button
-            onClick={() => {
-              setSubmitted(false);
-              setGuess('#000000');
-              nextQuestion();
-            }}
-          >
-            Next question
-          </Button>
-        </div>
-      )}
+      {state.status === 'idle' && <QuestionForm />}
+      {state.status === 'submitted' && <Result />}
     </div>
   );
 }
 
-function useQuestion() {
-  const [initialColorIndex] = useState(() => {
-    const url = new URL(window.location.href);
-    const q = url.searchParams.get('q');
+function QuestionForm() {
+  const { dispatch } = useGameState();
+  const [guess, setGuess] = useState('#000000');
 
-    if (!q) return undefined;
-
-    const parsed = Number.parseInt(q, 10);
-    return !Number.isNaN(parsed) ? parsed : undefined;
-  });
-  const { color, colorIndex, nextColor } = useRandomColor(initialColorIndex);
-
-  function setSearchParam(index: number) {
-    const url = new URL(window.location.href);
-    url.searchParams.set('q', index.toString());
-    history.replaceState({}, '', url);
-  }
-
-  function nextQuestion() {
-    const index = nextColor();
-    setSearchParam(index);
-  }
-
-  useEffect(() => {
-    if (initialColorIndex !== colorIndex) {
-      setSearchParam(colorIndex);
-    }
-  }, []);
-
-  return { color, nextQuestion };
+  return (
+    <form
+      id="answer"
+      onSubmit={(e) => {
+        e.preventDefault();
+        dispatch({ type: 'submit', payload: { guess } });
+      }}
+    >
+      <HexColorPicker color={guess} onChange={(c) => setGuess(c)} />
+      <ColorSwatch color={guess} />
+      <Button type="submit">Submit guess</Button>
+    </form>
+  );
 }
 
-function useRandomColor(initialColorIndex?: number): {
-  color: { hex: string; name: string };
-  colorIndex: number;
-  nextColor: () => number;
-} {
-  const getRandomColorIndex = () => randomInt(0, colors.length);
-  const [colorIndex, setColorIndex] = useState(() => initialColorIndex ?? getRandomColorIndex());
-  const nextColor = () => {
-    const index = getRandomColorIndex();
-    setColorIndex(index);
-    return index;
-  };
-  const [hex, name] = colors[colorIndex];
+function Result() {
+  const { state, dispatch } = useGameState();
 
-  return useMemo(() => ({ color: { hex, name }, colorIndex, nextColor }), [colorIndex]);
+  if (state.status !== 'submitted') return null;
+
+  const color = colors[state.colorIndex];
+  const distance = deltaE2000(rgb2lab(hex2rgb(color.hex)), rgb2lab(hex2rgb(state.guess)));
+  const score = 100 - Math.min(distance, 100);
+  const formattedScore = `${score.toFixed(2)}%`;
+
+  return (
+    <div>
+      <p>
+        Your score is <strong>{formattedScore}</strong>. {resultStr(distance)}
+      </p>
+
+      <h2>You chose:</h2>
+
+      <ColorSwatch color={state.guess} />
+
+      <h2>The answer was:</h2>
+
+      <ColorSwatch color={color.hex} />
+
+      <TwitterShareButton
+        text={`I scored ${formattedScore} for the color: ${color.name}. Challenge me on ${window.location.href} #ColorGuessr`}
+      >
+        Share on Twitter
+      </TwitterShareButton>
+
+      <Button
+        onClick={() => {
+          dispatch({ type: 'next' });
+        }}
+      >
+        Next question
+      </Button>
+    </div>
+  );
 }
 
 function resultStr(distance: number): string {
