@@ -79,19 +79,21 @@ function useQuestion() {
   });
   const { color, colorIndex, nextColor } = useRandomColor(initialColorIndex);
 
-  function nextQuestion() {
-    const index = nextColor();
+  function setSearchParam(index: number) {
     const url = new URL(window.location.href);
     url.searchParams.set('q', index.toString());
-    history.pushState({}, '', url);
+    history.replaceState({}, '', url);
+  }
+
+  function nextQuestion() {
+    const index = nextColor();
+    setSearchParam(index);
   }
 
   useEffect(() => {
-    if (initialColorIndex != null) return;
-
-    const url = new URL(window.location.href);
-    url.searchParams.set('q', colorIndex.toString());
-    history.pushState({}, '', url);
+    if (initialColorIndex !== colorIndex) {
+      setSearchParam(colorIndex);
+    }
   }, []);
 
   return { color, nextQuestion };
