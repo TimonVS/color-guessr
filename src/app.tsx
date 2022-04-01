@@ -26,7 +26,9 @@ function Game() {
 
   return (
     <div className="main">
-      <h1 class="title">Guess the color: {color.name}</h1>
+      <p class="title">
+        Find the color: <strong>{color.name}</strong>
+      </p>
       {state.status === 'idle' && <QuestionForm />}
       {state.status === 'submitted' && <Result />}
     </div>
