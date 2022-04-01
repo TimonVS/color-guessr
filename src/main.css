@@ -1,5 +1,9 @@
 @import '../node_modules/modern-normalize/modern-normalize.css';
 
+:root {
+  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
 html {
   height: 100%;
 }
@@ -34,7 +38,7 @@ body {
   background: #fff;
   padding: 2rem;
   border-radius: 1rem;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  box-shadow: var(--shadow);
 }
 
 .title {
@@ -54,7 +58,7 @@ body {
   text-align: center;
   color: #fff;
   background: #11181c;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  box-shadow: var(--shadow);
   transition: opacity 0.2s;
   text-decoration: none;
 }
@@ -83,14 +87,44 @@ body {
   border-radius: 8px;
 }
 
-.main .color-swatch {
-  margin-top: 1rem;
+.color-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  color: #fff;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: var(--shadow);
 }
 
-.main .button {
+.color-compare > div {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  align-content: center;
+  text-align: center;
+  padding: 2rem 0.5rem;
+}
+
+.color-compare span {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.color-compare small {
+  display: block;
+}
+
+.main .color-swatch {
   margin-top: 1rem;
 }
 
 .main .react-colorful {
   width: auto;
+}
+
+.main footer {
+  display: grid;
+  margin-top: 1.5rem;
+  gap: 0.5rem;
 }

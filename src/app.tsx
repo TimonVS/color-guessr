@@ -2,7 +2,7 @@ import { useEffect, useState } from 'preact/hooks';
 import { HexColorPicker } from 'react-colorful';
 import { Button, TwitterShareButton } from './button';
 import { ColorSwatch } from './color-swatch';
-import { deltaE2000, hex2rgb, rgb2lab } from './color-utils';
+import { deltaE2000, getBrightness, hex2rgb, rgb2lab } from './color-utils';
 import { colors } from './colors';
 import { GameStateContextProvider, useGameState } from './game-state';
 
@@ -49,7 +49,10 @@ function QuestionForm() {
     >
       <HexColorPicker color={guess} onChange={(c) => setGuess(c)} />
       <ColorSwatch color={guess} />
-      <Button type="submit">Submit guess</Button>
+
+      <footer>
+        <Button type="submit">Submit guess</Button>
+      </footer>
     </form>
   );
 }
@@ -70,27 +73,42 @@ function Result() {
         Your score is <strong>{formattedScore}</strong>. {resultStr(distance)}
       </p>
 
-      <h2>You chose:</h2>
+      <div class="color-compare">
+        <div
+          style={{
+            background: state.guess,
+            color: getBrightness(hex2rgb(state.guess)) > 128 ? '#000' : '#fff',
+          }}
+        >
+          <span>Your guess</span>
+          <small>{state.guess}</small>
+        </div>
+        <div
+          style={{
+            background: color.hex,
+            color: getBrightness(hex2rgb(color.hex)) > 128 ? '#000' : '#fff',
+          }}
+        >
+          <span>{color.name}</span>
+          <small>{color.hex}</small>
+        </div>
+      </div>
 
-      <ColorSwatch color={state.guess} />
+      <footer>
+        <TwitterShareButton
+          text={`I scored ${formattedScore} for the color: ${color.name}. Challenge me on ${window.location.href} #ColorGuessr`}
+        >
+          Share on Twitter
+        </TwitterShareButton>
 
-      <h2>The answer was:</h2>
-
-      <ColorSwatch color={color.hex} />
-
-      <TwitterShareButton
-        text={`I scored ${formattedScore} for the color: ${color.name}. Challenge me on ${window.location.href} #ColorGuessr`}
-      >
-        Share on Twitter
-      </TwitterShareButton>
-
-      <Button
-        onClick={() => {
-          dispatch({ type: 'next' });
-        }}
-      >
-        Next question
-      </Button>
+        <Button
+          onClick={() => {
+            dispatch({ type: 'next' });
+          }}
+        >
+          Next question
+        </Button>
+      </footer>
     </div>
   );
 }
