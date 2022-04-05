@@ -25,12 +25,16 @@ function Game() {
   }, [state.colorIndex]);
 
   return (
-    <div className="main">
-      <p class="title">
-        Find the color: <strong>{color.name}</strong>
-      </p>
-      {state.status === 'idle' && <QuestionForm />}
-      {state.status === 'submitted' && <Result />}
+    <div class="main">
+      <div className="scrollable">
+        <header>
+          <p class="title">
+            Find the color: <strong>{color.name}</strong>
+          </p>
+        </header>
+        {state.status === 'idle' && <QuestionForm />}
+        {state.status === 'submitted' && <Result />}
+      </div>
     </div>
   );
 }
@@ -40,20 +44,24 @@ function QuestionForm() {
   const [guess, setGuess] = useState('#000000');
 
   return (
-    <form
-      id="answer"
-      onSubmit={(e) => {
-        e.preventDefault();
-        dispatch({ type: 'submit', payload: { guess } });
-      }}
-    >
-      <HexColorPicker color={guess} onChange={(c) => setGuess(c)} />
-      <ColorSwatch color={guess} />
-
+    <>
+      <form
+        id="answer"
+        class="body"
+        onSubmit={(e) => {
+          e.preventDefault();
+          dispatch({ type: 'submit', payload: { guess } });
+        }}
+      >
+        <HexColorPicker color={guess} onChange={(c) => setGuess(c)} />
+        <ColorSwatch color={guess} />
+      </form>
       <footer>
-        <Button type="submit">Submit guess</Button>
+        <Button type="submit" form="answer">
+          Submit guess
+        </Button>
       </footer>
-    </form>
+    </>
   );
 }
 
@@ -68,29 +76,31 @@ function Result() {
   const formattedScore = `${score.toFixed(2)}%`;
 
   return (
-    <div>
-      <p>
-        Your score is <strong>{formattedScore}</strong>. {resultStr(distance)}
-      </p>
+    <>
+      <div class="body">
+        <p>
+          Your score is <strong>{formattedScore}</strong>. {resultStr(distance)}
+        </p>
 
-      <div class="color-compare">
-        <div
-          style={{
-            background: state.guess,
-            color: getBrightness(hex2rgb(state.guess)) > 128 ? '#000' : '#fff',
-          }}
-        >
-          <span>Your guess</span>
-          <small>{state.guess}</small>
-        </div>
-        <div
-          style={{
-            background: color.hex,
-            color: getBrightness(hex2rgb(color.hex)) > 128 ? '#000' : '#fff',
-          }}
-        >
-          <span>{color.name}</span>
-          <small>{color.hex}</small>
+        <div class="color-compare">
+          <div
+            style={{
+              background: state.guess,
+              color: getBrightness(hex2rgb(state.guess)) > 128 ? '#000' : '#fff',
+            }}
+          >
+            <span>Your guess</span>
+            <small>{state.guess}</small>
+          </div>
+          <div
+            style={{
+              background: color.hex,
+              color: getBrightness(hex2rgb(color.hex)) > 128 ? '#000' : '#fff',
+            }}
+          >
+            <span>{color.name}</span>
+            <small>{color.hex}</small>
+          </div>
         </div>
       </div>
 
@@ -109,7 +119,7 @@ function Result() {
           Next question
         </Button>
       </footer>
-    </div>
+    </>
   );
 }
 
